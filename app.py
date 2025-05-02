@@ -1,6 +1,8 @@
-from flask import Flask, request, jsonify
+# app.py
+from flask import Flask, request, jsonify, send_from_directory
 import requests
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
 CORS(app)
@@ -29,6 +31,11 @@ def lookup():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+# Serve the index.html frontend
+@app.route("/")
+def serve_index():
+    return send_from_directory(os.path.join(app.root_path, 'static'), 'index.html')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=False)
