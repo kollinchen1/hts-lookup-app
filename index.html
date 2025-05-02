@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>HTS Lookup Tool</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2em; }
+    input { padding: 0.5em; width: 250px; margin-right: 1em; }
+    button { padding: 0.5em 1em; }
+    .result { margin-top: 2em; padding: 1em; background: #f9f9f9; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <h1>HTS Lookup Tool</h1>
+  <input type="text" id="partInput" placeholder="Enter part number...">
+  <button onclick="lookupPart()">Check</button>
+  <div id="result" class="result" style="display:none;"></div>
+  <script>
+    async function lookupPart() {
+      const part = document.getElementById("partInput").value.trim();
+      const resultDiv = document.getElementById("result");
+      resultDiv.style.display = "none";
+      resultDiv.textContent = "";
+      if (!part) {
+        alert("Please enter a part number.");
+        return;
+      }
+      try {
+        const res = await fetch(`/lookup?part=${encodeURIComponent(part)}`);
+        const data = await res.json();
+        if (data.error) {
+          resultDiv.textContent = "Error: " + data.error;
+        } else {
+          resultDiv.innerHTML = `<strong>Part:</strong> ${data.part}<br>
+                                 <strong>HTS:</strong> ${data.HTS}<br>
+                                 <strong>COO:</strong> ${data.COO}<br>
+                                 <strong>Description:</strong> ${data.HTSDescription}`;
+        }
+        resultDiv.style.display = "block";
+      } catch (err) {
+        resultDiv.textContent = "Request failed: " + err.message;
+        resultDiv.style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>
